@@ -7,7 +7,7 @@
 </head>
 <body>
     {% for msg in get_flashed_messages() %}
-    <p>msg</p>
+    <h3><b>!!!{{msg}}</b></h3>
     {% endfor %}
     {% block content %}
     {% endblock %}

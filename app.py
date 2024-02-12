@@ -1,5 +1,6 @@
 from flask import Flask,request,render_template,redirect,flash
 from flask_debugtoolbar import DebugToolbarExtension
+from flask import session
 from surveys import satisfaction_survey
 
 app = Flask(__name__)
@@ -9,30 +10,34 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug=DebugToolbarExtension(app)
 
 
-responses=[]
+# responses = session["responses"] can't be difine outside of route
 survey = satisfaction_survey
 que_len=len(survey.questions)
 
 @app.route("/")
 def home_page():
     """ home page """
-    print(f"this is {responses}")
     return render_template("homepage.html",title=survey.title, instructions=survey.instructions)
 
-@app.route("/begin",methods=['POST'])
+@app.route("/sessionPage",methods=['POST'])
+def set_session():
+    session['responses'] = []
+    print("####################################")
+    print(session["responses"])
+    return redirect("/begin")
+
+@app.route("/begin")
 def start_survey():
-    responses.clear();
     return redirect("/questions/0")
 
 @app.route("/questions/<int:idx>")
 def question(idx):
+    responses = session['responses']
     if (len(responses) != idx):  
+        flash("you are trying to access an invalid question")
         return redirect(f"/questions/{len(responses)}")
     if(len(responses) == que_len):
         return redirect("/complete")
-    if(idx > que_len or idx < 0 ):
-        flash(f"no such question")
-        return redirect(f"/questions/{len(responses)}")
 
     question = survey.questions[idx]
     return render_template("questions.html",question=question.question,choices=question.choices)
@@ -40,11 +45,19 @@ def question(idx):
 @app.route("/answer",methods=['POST'])
 def answer():
     answer=request.form['answer']
+     # if(answer == ''):
+    #     flash("please select an answer")
+    #     return redirect(f"/questions/{len(responses)}")
+    responses = session["responses"]
     responses.append(answer)
+    session["responses"] = responses
     if(len(responses) == que_len):
-        # print(f"this is {responses}")
+        print("###$$$$$$$$$$$#########")
+        print(session["responses"])
         return redirect('/complete')
     else:
+        print("###$$$$$$$$$$$#########")
+        print(session["responses"])
         return redirect(f"/questions/{len(responses)}")
 
 
