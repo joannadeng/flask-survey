@@ -1,13 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 <div>
+    <div>
     <p>{{question}}</p>
+    </div>
     <form action="/answer" method="post" >
+        <dir>
         {% for choice in choices%}
         <label for="{{choice}}">{{choice}}</label>
         <input type="radio" id="{{choice}}" value="{{choice}}" name="answer" required>
         {% endfor %}
-        <button>next!</button>
+        </dir>
+        <dir>
+         {% if allow_text %}
+        <label for="comment">Please leave your comment:</label>
+        <br>
+        <textarea id="comment" name="comment" rows="3" cols="33" required></textarea>
+        {% endif %}
+        </dir>
+        <dir><button>next!</button></dir>
     </form>
 </div>
 {% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Select a survey</h1>
+<form action="/pick_a_survey">
+    <label for="survey-select">choose a survey</label>
+    <select name="survey" id="survey-select" required>
+        <option value="">--please select a survey--</option>
+        {% for key in surveys.keys() %}
+        <option value="{{key}}">{{key}}</option>
+        {% endfor %}
+    </select>
+    <button>submit</button>
+</form>
+{% endblock %}
